@@ -100,8 +100,11 @@ const LinkPage: FC = () => {
                 <TableCell>
                   <span>받은사람</span>
                   <LinkReceivers>
-                    {/* {items.sent.emails ? items.sent.emails.map((email, idx)=>{})<h1>리액트입니다.</h1> : <h1>리액트가 아닙니다</h1>} */}
-                    <Avatar text="recruit@estmob.com" />
+                    {!items.sent
+                      ? null
+                      : items.sent.emails.map((email, idx) => (
+                          <Avatar key={idx} text={email} />
+                        ))}
                   </LinkReceivers>
                 </TableCell>
               </TableRow>
