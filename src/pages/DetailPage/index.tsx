@@ -1,17 +1,20 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import type { FC } from "react";
 import { useParams } from "react-router-dom";
-import fileSize from "filesize";
-import { addYears, format, isPast } from "date-fns";
 import axios from "axios";
 
 import FileListItem from "./FileListItem";
+import DescItem from "./DescriptionItem";
+import DownloadButton from "./DownloadButton";
+import Loading from "components/Loading";
+import NotFound from "components/Notfound";
 
 import * as S from "pages/DetailPage/styles";
 import { Detail } from "types/detail";
+import { createDate, isPast } from "utils/date";
+import { convertFileUnit } from "utils/convertFileUnit";
 
-const DetailPage: FC = () => {
+const DetailPage = () => {
   const [detail, setDetail] = useState<Detail | undefined>(undefined);
   const [expired, setExpired] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -31,61 +34,37 @@ const DetailPage: FC = () => {
 
   useEffect(() => {
     if (detail) {
-      setExpired(isPast(addYears(detail.expires_at, 52)));
+      setExpired(isPast(detail.expires_at * 1000));
     }
   }, [detail]);
 
-  const handleClick = () => {
-    if (detail && !expired) {
-      alert("다운로드 되었습니다.");
-    } else if (detail && expired) {
-      alert("만료된 링크입니다.");
-    }
-  };
-
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
-  if (!loading && !detail) {
-    return <div>Item not found.</div>;
-  }
-
-  if (!loading && detail) {
+  if (detail) {
     return (
       <>
         <S.Header>
           <S.LinkInfo>
             <S.Title>{detail.sent?.subject || "제목없음"}</S.Title>
-            <S.Url>localhost:3000/{key}</S.Url>
+            <S.Url>
+              {window.location.host}/{key}
+            </S.Url>
           </S.LinkInfo>
-          <S.DownloadButton onClick={handleClick} expired={!expired}>
-            <img
-              referrerPolicy="no-referrer"
-              src={!expired ? "/svgs/forbidden.svg" : "/svgs/download.svg"}
-              alt=""
-            />
-            {!expired ? "만료" : "받기"}
-          </S.DownloadButton>
+          <DownloadButton expired={expired} />
         </S.Header>
         <S.Article>
           <S.Description>
             <S.Texts>
-              <S.Top>링크 생성일</S.Top>
-              <S.Bottom>
-                {format(
-                  addYears(detail.created_at, 52),
-                  "yyyy년 MM월 dd일 HH:mm xxx",
-                )}
-              </S.Bottom>
+              <DescItem
+                title="링크 생성일"
+                text={createDate(detail.created_at)}
+              />
               {detail.sent?.content && (
-                <>
-                  <S.Top>메세지</S.Top>
-                  <S.Bottom>{detail.sent.content}</S.Bottom>
-                </>
+                <DescItem title="메세지" text={detail.sent.content} />
               )}
-              <S.Top>다운로드 횟수</S.Top>
-              <S.Bottom>{detail.download_count}</S.Bottom>
+              <DescItem title="다운로드 횟수" text={detail.download_count} />
             </S.Texts>
             <S.LinkImage>
               <S.Image />
@@ -94,7 +73,7 @@ const DetailPage: FC = () => {
           <S.ListSummary>
             <div>총 {detail.files.length}개의 파일</div>
             <div>
-              {fileSize(
+              {convertFileUnit(
                 detail.files.reduce((result, current) => {
                   return result + current.size;
                 }, 0),
@@ -102,11 +81,16 @@ const DetailPage: FC = () => {
             </div>
           </S.ListSummary>
           <S.FileList>
-            {!expired ? (
+            {expired ? (
               <S.ExpiredWarning>만료된 링크입니다.</S.ExpiredWarning>
             ) : (
-              detail.files.map(({ key, name, size }) => (
-                <FileListItem key={key} name={name} size={size} />
+              detail.files.map(({ key, name, size, thumbnailUrl }) => (
+                <FileListItem
+                  key={key}
+                  name={name}
+                  size={size}
+                  thumbnailUrl={thumbnailUrl}
+                />
               ))
             )}
           </S.FileList>
@@ -115,7 +99,7 @@ const DetailPage: FC = () => {
     );
   }
 
-  return <div>Something went wrong. Please try again later.</div>;
+  return <NotFound />;
 };
 
 export default DetailPage;
