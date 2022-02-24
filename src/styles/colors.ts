@@ -23,6 +23,7 @@ const colors = {
   grey800: "#343A40",
   grey900: "#212529",
   pink500: "#ff2d55",
+  red900: "#ff0000",
 };
 
 export type Colors = typeof colors;
