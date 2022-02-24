@@ -22,3 +22,7 @@ export const createDate = (create: number) => {
     `${time} ${standard.slice(0, 3)}:${standard.slice(3, 5)}`
   );
 };
+
+export const isPast = (timestamp: number) => {
+  return Date.now() > timestamp;
+};

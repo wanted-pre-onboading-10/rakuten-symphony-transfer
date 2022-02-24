@@ -1,15 +1,30 @@
 import React from "react";
 import styled from "styled-components";
-import fileSize from "filesize";
 
-const FileListItem = ({ name, size }: { name: string; size: number }) => {
+import { convertFileUnit } from "utils/convertFileUnit";
+import { isSvgLink, getSvgFileName } from "utils/svg";
+
+const FileListItem = ({
+  name,
+  size,
+  thumbnailUrl,
+}: {
+  name: string;
+  size: number;
+  thumbnailUrl: string;
+}) => {
+  const fetchesSvg = isSvgLink(thumbnailUrl);
+  const imageUrl = fetchesSvg
+    ? "/svgs/" + getSvgFileName(thumbnailUrl)
+    : thumbnailUrl;
+
   return (
     <FileListItemLi>
       <FileItemInfo>
-        <FileImg />
+        <FileImg url={imageUrl} />
         <span>{name}</span>
       </FileItemInfo>
-      <FileItemSize>{fileSize(size)}</FileItemSize>
+      <FileItemSize>{convertFileUnit(size)}</FileItemSize>
     </FileListItemLi>
   );
 };
@@ -29,12 +44,12 @@ const FileItemInfo = styled.div`
   align-items: center;
 `;
 
-const FileImg = styled.span`
+const FileImg = styled.span<{ url: string }>`
   width: 40px;
   height: 40px;
   margin-right: 12px;
   display: inline-block;
-  background-image: url(/svgs/default.svg);
+  background-image: ${({ url }) => `url(${url})`};
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center center;
