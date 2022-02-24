@@ -1,10 +1,57 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import type { FC } from "react";
 import Avatar from "components/Avatar";
 import styled from "styled-components";
 import colors from "styles/colors";
+import axios from "axios";
+
+type ItemsType = ItemObjectType[];
+
+type ItemObjectType = {
+  created_at: number;
+  key: string;
+  expires_at: number;
+  download_count: number;
+  count: number;
+  size: number;
+  summary: string;
+  thumbnailUrl: string;
+  files: FileType[];
+  sent?: SentType;
+};
+
+type FileType = {
+  key: string;
+  thumbnailUrl: string;
+  name: string;
+  size: number;
+};
+
+type SentType = {
+  subject: string;
+  content: string;
+  emails: string[];
+};
 
 const LinkPage: FC = () => {
+  // useEffect(() => {
+  //   axios.get("/homeworks/links").then(res => {
+  //     res.data.map((items: ItemsType, idx: number) => {
+  //       console.log(items);
+  //     });
+  //   });
+  // }, []);
+  // async function getUsers() {
+  //   const response = await axios.get("/homeworks/links");
+  //   return response.data;
+  // }
+  const [items, setItems] = useState<ItemsType>([]);
+
+  useEffect(() => {
+    axios.get("/homeworks/links").then(response => {
+      setItems(response.data);
+    });
+  }, []);
   return (
     <>
       <Title>마이 링크</Title>
@@ -19,114 +66,47 @@ const LinkPage: FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          <TableRow>
-            <TableCell>
-              <LinkInfo>
-                <LinkImage>
-                  <img
-                    referrerPolicy="no-referrer"
-                    src="/svgs/default.svg"
-                    alt=""
-                  />
-                </LinkImage>
-                <LinkTexts>
-                  <LinkTitle>로고파일</LinkTitle>
-                  <LinkUrl>localhost/7LF4MDLY</LinkUrl>
-                </LinkTexts>
-              </LinkInfo>
-              <span />
-            </TableCell>
-            <TableCell>
-              <span>파일개수</span>
-              <span>1</span>
-            </TableCell>
-            <TableCell>
-              <span>파일사이즈</span>
-              <span>10.86KB</span>
-            </TableCell>
-            <TableCell>
-              <span>유효기간</span>
-              <span>48시간 00분</span>
-            </TableCell>
-            <TableCell>
-              <span>받은사람</span>
-              <LinkReceivers>
-                <Avatar text="recruit@estmob.com" />
-              </LinkReceivers>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <LinkInfo>
-                <LinkImage>
-                  <img
-                    referrerPolicy="no-referrer"
-                    src="/svgs/default.svg"
-                    alt=""
-                  />
-                </LinkImage>
-                <LinkTexts>
-                  <LinkTitle>로고파일</LinkTitle>
-                  <LinkUrl>localhost/7LF4MDLY</LinkUrl>
-                </LinkTexts>
-              </LinkInfo>
-              <span />
-            </TableCell>
-            <TableCell>
-              <span>파일개수</span>
-              <span>1</span>
-            </TableCell>
-            <TableCell>
-              <span>파일사이즈</span>
-              <span>10.86KB</span>
-            </TableCell>
-            <TableCell>
-              <span>유효기간</span>
-              <span>48시간 00분</span>
-            </TableCell>
-            <TableCell>
-              <span>받은사람</span>
-              <LinkReceivers>
-                <Avatar text="recruit@estmob.com" />
-              </LinkReceivers>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <LinkInfo>
-                <LinkImage>
-                  <img
-                    referrerPolicy="no-referrer"
-                    src="/svgs/default.svg"
-                    alt=""
-                  />
-                </LinkImage>
-                <LinkTexts>
-                  <LinkTitle>로고파일</LinkTitle>
-                  <LinkUrl>localhost/7LF4MDLY</LinkUrl>
-                </LinkTexts>
-              </LinkInfo>
-              <span />
-            </TableCell>
-            <TableCell>
-              <span>파일개수</span>
-              <span>1</span>
-            </TableCell>
-            <TableCell>
-              <span>파일사이즈</span>
-              <span>10.86KB</span>
-            </TableCell>
-            <TableCell>
-              <span>유효기간</span>
-              <span>48시간 00분</span>
-            </TableCell>
-            <TableCell>
-              <span>받은사람</span>
-              <LinkReceivers>
-                <Avatar text="recruit@estmob.com" />
-              </LinkReceivers>
-            </TableCell>
-          </TableRow>
+          {items.map((items: ItemObjectType, idx: number) => {
+            return (
+              <TableRow key={idx}>
+                <TableCell>
+                  <LinkInfo>
+                    <LinkImage>
+                      <img
+                        referrerPolicy="no-referrer"
+                        src={items.thumbnailUrl}
+                        alt=""
+                      />
+                    </LinkImage>
+                    <LinkTexts>
+                      <LinkTitle>{items.summary}</LinkTitle>
+                      <LinkUrl>{items.thumbnailUrl}</LinkUrl>
+                    </LinkTexts>
+                  </LinkInfo>
+                  <span />
+                </TableCell>
+                <TableCell>
+                  <span>파일개수</span>
+                  <span>{items.count}</span>
+                </TableCell>
+                <TableCell>
+                  <span>파일사이즈</span>
+                  <span>{items.size}</span>
+                </TableCell>
+                <TableCell>
+                  <span>유효기간</span>
+                  <span>{items.expires_at}</span>
+                </TableCell>
+                <TableCell>
+                  <span>받은사람</span>
+                  <LinkReceivers>
+                    {/* {items.sent.emails ? items.sent.emails.map((email, idx)=>{})<h1>리액트입니다.</h1> : <h1>리액트가 아닙니다</h1>} */}
+                    <Avatar text="recruit@estmob.com" />
+                  </LinkReceivers>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </>
