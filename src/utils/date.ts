@@ -13,10 +13,10 @@ export const createDate = (create: number) => {
   const date = new Date(create * 1000);
 
   const time = date.toTimeString().slice(0, 5);
-  const standard = date.toTimeString().split("+")[1];
+  const standard = date.toTimeString().split(" (")[0].slice(-5);
 
   return (
     `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ` +
-    `${time} +${standard.slice(0, 2)}:${standard.slice(2, 4)}`
+    `${time} ${standard.slice(0, 3)}:${standard.slice(3, 5)}`
   );
 };
