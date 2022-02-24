@@ -4,6 +4,10 @@ import Avatar from "components/Avatar";
 import styled from "styled-components";
 import colors from "styles/colors";
 import axios from "axios";
+import { addComma } from "utils/convert";
+import { expireDate } from "utils/date";
+import { convertFileUnit } from "utils/convertFileUnit";
+import { useLocation, useNavigate } from "react-router-dom";
 
 type ItemsType = ItemObjectType[];
 
@@ -46,12 +50,25 @@ const LinkPage: FC = () => {
   //   return response.data;
   // }
   const [items, setItems] = useState<ItemsType>([]);
+  const navigate = useNavigate();
+  const URL = window.location.href;
 
   useEffect(() => {
     axios.get("/homeworks/links").then(response => {
       setItems(response.data);
     });
   }, []);
+
+  const clickHandler = (key: string): void => {
+    navigate(`/${key}`);
+  };
+  const setCurUrl = (key: string, expires_at: number): string => {
+    return expireDate(expires_at) === "만료됨" ? "만료됨" : URL + key;
+  };
+  const checkIsValid = (expires_at: number): boolean => {
+    return expireDate(expires_at) !== "만료됨" ? true : false;
+  };
+
   return (
     <>
       <Title>마이 링크</Title>
@@ -66,43 +83,55 @@ const LinkPage: FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {items.map((items: ItemObjectType, idx: number) => {
+          {/* 구조 분해 할당 예정 */}
+          {items.map((item: ItemObjectType, idx: number) => {
+            const isValid = checkIsValid(item.expires_at);
             return (
-              <TableRow key={idx}>
+              <TableRow
+                key={idx}
+                onClick={() => {
+                  isValid ? clickHandler(item.key) : null;
+                }}>
                 <TableCell>
                   <LinkInfo>
                     <LinkImage>
                       <img
                         referrerPolicy="no-referrer"
-                        src={items.thumbnailUrl}
+                        src={item.thumbnailUrl}
                         alt=""
                       />
                     </LinkImage>
                     <LinkTexts>
-                      <LinkTitle>{items.summary}</LinkTitle>
-                      <LinkUrl>{items.thumbnailUrl}</LinkUrl>
+                      <LinkTitle>{item.summary}</LinkTitle>
+                      <LinkUrl
+                        isValid={isValid}
+                        onClick={event => {
+                          event.stopPropagation();
+                        }}>
+                        {setCurUrl(item.key, item.expires_at)}
+                      </LinkUrl>
                     </LinkTexts>
                   </LinkInfo>
                   <span />
                 </TableCell>
                 <TableCell>
                   <span>파일개수</span>
-                  <span>{items.count}</span>
+                  <span>{addComma(item.count)}</span>
                 </TableCell>
                 <TableCell>
                   <span>파일사이즈</span>
-                  <span>{items.size}</span>
+                  <span>{convertFileUnit(item.size)}</span>
                 </TableCell>
                 <TableCell>
                   <span>유효기간</span>
-                  <span>{items.expires_at}</span>
+                  <span>{expireDate(item.expires_at)}</span>
                 </TableCell>
                 <TableCell>
                   <span>받은사람</span>
                   <LinkReceivers>
-                    {!items.sent
+                    {!item.sent
                       ? null
-                      : items.sent.emails.map((email, idx) => (
+                      : item.sent.emails.map((email: string, idx: number) => (
                           <Avatar key={idx} text={email} />
                         ))}
                   </LinkReceivers>
@@ -110,6 +139,61 @@ const LinkPage: FC = () => {
               </TableRow>
             );
           })}
+          {/* 삭제 예정 */}
+          <TableRow
+            onClick={() => {
+              checkIsValid(1645923723) ? clickHandler("7725NJHW") : null;
+            }}>
+            <TableCell>
+              <LinkInfo>
+                <LinkImage>
+                  <img
+                    referrerPolicy="no-referrer"
+                    src="/svgs/default.svg"
+                    alt=""
+                  />
+                </LinkImage>
+                <LinkTexts>
+                  <LinkTitle>로고파일</LinkTitle>
+                  <LinkUrl
+                    isValid={checkIsValid(1645923723)}
+                    onClick={event => {
+                      event.stopPropagation();
+                      navigator.clipboard.writeText(
+                        setCurUrl("7725NJHW", 1645923723),
+                      );
+                      alert(
+                        `${setCurUrl(
+                          "7725NJHW",
+                          1645923723,
+                        )}주소가 복사되었습니다.`,
+                      );
+                    }}>
+                    {setCurUrl("7725NJHW", 1645923723)}
+                  </LinkUrl>
+                </LinkTexts>
+              </LinkInfo>
+              <span />
+            </TableCell>
+            <TableCell>
+              <span>파일개수</span>
+              <span>1</span>
+            </TableCell>
+            <TableCell>
+              <span>파일사이즈</span>
+              <span>10.86KB</span>
+            </TableCell>
+            <TableCell>
+              <span>유효기간</span>
+              <span>48시간 00분</span>
+            </TableCell>
+            <TableCell>
+              <span>받은사람</span>
+              <LinkReceivers>
+                <Avatar text="recruit@estmob.com" />
+              </LinkReceivers>
+            </TableCell>
+          </TableRow>
         </TableBody>
       </Table>
     </>
@@ -247,8 +331,8 @@ const LinkTitle = styled.p`
   color: ${colors.grey700};
 `;
 
-const LinkUrl = styled.a`
-  text-decoration: underline;
+const LinkUrl = styled.p<{ isValid: boolean }>`
+  text-decoration: ${props => (props.isValid ? "underline" : "none")};
 
   :hover {
     color: ${colors.teal700};
