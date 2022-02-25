@@ -99,7 +99,7 @@ const LinkPage: FC = () => {
               <S.TableRow
                 key={idx}
                 onClick={() => {
-                  isValid && movePage(item.key);
+                  movePage(item.key);
                 }}>
                 <S.TitleTableCell>
                   <S.LinkInfo>
