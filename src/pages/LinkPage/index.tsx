@@ -43,12 +43,13 @@ const LinkPage: FC = () => {
   const navigate = useNavigate();
   const URL = window.location.href;
 
+  const PROXY = window.location.hostname === "localhost" ? "" : "/proxy";
+  const AXIOS_URL = `${PROXY}/homeworks/links`;
+
   useEffect(() => {
-    axios
-      .get("https://storage-fe.fastraffic.io/homeworks/links")
-      .then(response => {
-        setItems(response.data);
-      });
+    axios.get(AXIOS_URL).then(response => {
+      setItems(response.data);
+    });
   }, []);
 
   const movePage = (key: string): void => {

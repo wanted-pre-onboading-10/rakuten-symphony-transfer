@@ -20,12 +20,13 @@ const DetailPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { key } = useParams();
 
+  const PROXY = window.location.hostname === "localhost" ? "" : "/proxy";
+  const URL = `${PROXY}/homeworks/links`;
+
   useEffect(() => {
     const initPage = async () => {
       setLoading(true);
-      const res = await axios.get<Detail[]>(
-        "https://storage-fe.fastraffic.io/homeworks/links",
-      );
+      const res = await axios.get<Detail[]>(URL);
       const det = res.data.find(detail => detail.key === key);
       setDetail(det);
       setLoading(false);
