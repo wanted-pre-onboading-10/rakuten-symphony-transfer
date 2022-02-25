@@ -23,7 +23,9 @@ const DetailPage = () => {
   useEffect(() => {
     const initPage = async () => {
       setLoading(true);
-      const res = await axios.get<Detail[]>("/homeworks/links");
+      const res = await axios.get<Detail[]>(
+        "https://storage-fe.fastraffic.io/homeworks/links",
+      );
       const det = res.data.find(detail => detail.key === key);
       setDetail(det);
       setLoading(false);

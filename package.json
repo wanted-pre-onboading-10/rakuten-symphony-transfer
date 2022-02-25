@@ -52,6 +52,5 @@
     "@babel/preset-typescript": "^7.16.7",
     "customize-cra": "^1.0.0",
     "react-app-rewired": "^2.1.11"
-  },
-  "proxy": "https://storage-fe.fastraffic.io"
+  }
 }
