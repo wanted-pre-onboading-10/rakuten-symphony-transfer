@@ -95,6 +95,7 @@ export const TableCell = styled.th`
   border-bottom: 1px solid ${colors.grey300};
   text-align: left;
   padding: 16px;
+  word-break: keep-all;
 `;
 export const TitleTableCell = styled(TableCell)`
   width: 548px;
