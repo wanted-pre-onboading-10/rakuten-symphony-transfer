@@ -43,9 +43,11 @@ const LinkPage: FC = () => {
   const URL = window.location.href;
 
   useEffect(() => {
-    axios.get("/homeworks/links").then(response => {
-      setItems(response.data);
-    });
+    axios
+      .get("https://storage-fe.fastraffic.io/homeworks/links")
+      .then(response => {
+        setItems(response.data);
+      });
   }, []);
 
   const movePage = (key: string): void => {
