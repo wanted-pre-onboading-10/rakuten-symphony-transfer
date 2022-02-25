@@ -6,6 +6,7 @@ import { addComma } from "utils/convert";
 import { expireDate } from "utils/date";
 import { convertFileUnit } from "utils/convertFileUnit";
 import { useNavigate } from "react-router-dom";
+import { isSvgLink, getSvgFileName } from "utils/svg";
 
 import * as S from "pages/LinkPage/styles";
 
@@ -69,6 +70,13 @@ const LinkPage: FC = () => {
     }
   };
 
+  const setFileName = (thumbnailUrl: string) => {
+    const fetchesSvg = isSvgLink(thumbnailUrl);
+    const imageUrl = fetchesSvg
+      ? "/svgs/" + getSvgFileName(thumbnailUrl)
+      : thumbnailUrl;
+    return imageUrl;
+  };
   return (
     <>
       <S.Title>마이 링크</S.Title>
@@ -97,7 +105,7 @@ const LinkPage: FC = () => {
                     <S.LinkImage>
                       <img
                         referrerPolicy="no-referrer"
-                        src={item.thumbnailUrl}
+                        src={setFileName(item.thumbnailUrl)}
                         alt=""
                       />
                     </S.LinkImage>
