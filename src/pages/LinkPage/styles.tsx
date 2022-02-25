@@ -96,6 +96,9 @@ export const TableCell = styled.th`
   text-align: left;
   padding: 16px;
 `;
+export const TitleTableCell = styled(TableCell)`
+  width: 548px;
+`;
 
 export const LinkInfo = styled.div`
   display: flex;
@@ -132,7 +135,7 @@ export const LinkTitle = styled.p`
 
 export const LinkUrl = styled.p<{ isValid: boolean }>`
   text-decoration: ${props => (props.isValid ? "underline" : "none")};
-
+  word-break: break-all;
   :hover {
     color: ${colors.teal700};
   }

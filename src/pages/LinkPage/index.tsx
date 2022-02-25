@@ -5,7 +5,7 @@ import axios from "axios";
 import { addComma } from "utils/convert";
 import { expireDate } from "utils/date";
 import { convertFileUnit } from "utils/convertFileUnit";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import * as S from "pages/LinkPage/styles";
 
@@ -43,7 +43,6 @@ const LinkPage: FC = () => {
   const URL = window.location.href;
 
   useEffect(() => {
-    console.log("렌더링이 되었습니다.");
     axios.get("/homeworks/links").then(response => {
       setItems(response.data);
     });
@@ -70,41 +69,6 @@ const LinkPage: FC = () => {
 
   return (
     <>
-      <button
-        onClick={() => {
-          setItems([
-            ...items,
-            {
-              created_at: 1641860565,
-              key: "15PMXQPE",
-              expires_at: 1645923723,
-              download_count: 0,
-              count: 1,
-              size: 11117,
-              summary: "유효기간이 만료되지 않은 경우 테스트",
-              thumbnailUrl:
-                "https://storage-fe.fastraffic.io/homeworks/thumbnails/15PMXQPE/1641860565.png",
-              files: [
-                {
-                  key: "662f2b22920a10dbb4cbd819d6f0786937208.jpg",
-                  thumbnailUrl:
-                    "https://storage-fe.fastraffic.io/homeworks/thumbnails/15PMXQPE/662f2b22920a10dbb4cbd819d6f0786937208.png",
-                  name: "fab-lentz-mRMQwK513hY-unsplash.jpg",
-                  size: 115916,
-                },
-              ],
-              sent: {
-                subject: "로고파일",
-                content: "로고파일 전달 드립니다.",
-                emails: [
-                  "recruit@estmob.com",
-                  "taeheekeim@gmail.com",
-                  "campuslife@daum.net",
-                ],
-              },
-            },
-          ]);
-        }}></button>
       <S.Title>마이 링크</S.Title>
       <S.Table>
         <S.TableHead>
@@ -126,7 +90,7 @@ const LinkPage: FC = () => {
                 onClick={() => {
                   isValid && movePage(item.key);
                 }}>
-                <S.TableCell>
+                <S.TitleTableCell>
                   <S.LinkInfo>
                     <S.LinkImage>
                       <img
@@ -148,7 +112,7 @@ const LinkPage: FC = () => {
                     </S.LinkTexts>
                   </S.LinkInfo>
                   <span />
-                </S.TableCell>
+                </S.TitleTableCell>
                 <S.TableCell>
                   <span>파일개수</span>
                   <span>{addComma(item.count)}</span>
@@ -173,7 +137,6 @@ const LinkPage: FC = () => {
               </S.TableRow>
             );
           })}
-          {/* 삭제 예정 */}
         </S.TableBody>
       </S.Table>
     </>
