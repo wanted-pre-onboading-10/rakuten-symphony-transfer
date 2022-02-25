@@ -10,7 +10,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = forwardRef<HTMLButtonElement, Props>(function Button(
   { fullWidth = false, children, ...rest },
-  forwardedRef
+  forwardedRef,
 ) {
   return (
     <Base ref={forwardedRef} fullWidth={fullWidth} {...rest}>
@@ -38,6 +38,7 @@ const Base = styled.button<{ fullWidth: boolean }>`
   user-select: none;
   -webkit-font-smoothing: antialiased;
   transition: color 0.1s ease-in-out, background-color 0.1s ease-in-out;
+  cursor: pointer;
 
   &:focus {
     outline: none;
